@@ -11,7 +11,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants: Record<Variant, string> = {
   primary: "bg-accent text-accent-fg hover:bg-accent-hover",
-  secondary: "border border-line-strong bg-card text-text hover:bg-line",
+  secondary: "border border-line-strong bg-[#23272e] text-text hover:bg-line",
   ghost: "bg-transparent text-muted hover:bg-line hover:text-text",
 };
 
@@ -25,7 +25,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-lg px-5 text-[15px] font-semibold transition-colors",
+        "inline-flex h-[46px] items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors",
         "disabled:cursor-not-allowed disabled:opacity-60",
         variants[variant],
         fullWidth && "w-full",
