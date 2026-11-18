@@ -79,3 +79,31 @@ export type FindingDetail = Finding & {
   explanation?: FindingExplanation;
   references?: { label: string; url: string }[];
 };
+
+
+export type ScanMeta = {
+  domain: string;
+  date: string;
+  duration: string;
+  assets: number;
+};
+
+export type Recommendation = {
+  id: string;
+  title: string;
+  detail: string;
+  severity: Severity;
+  findings: number;
+};
+
+export type AuditCategory = "auth" | "domain" | "scan" | "finding" | "settings";
+
+export type AuditEntry = {
+  id: string;
+  at: string;
+  actor: string;
+  category: AuditCategory;
+  action: string;
+  target?: string;
+  ip?: string;
+};
