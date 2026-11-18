@@ -1,0 +1,30 @@
+# Dependencias
+/node_modules
+/.pnp
+.pnp.*
+
+# Next.js
+/.next/
+/out/
+/build
+
+# Pruebas
+/coverage
+/playwright-report
+/test-results
+
+# Variables de entorno
+.env*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Sistema y logs
+.DS_Store
+Thumbs.db
+npm-debug.log*
+
+# Vercel
+.vercel
