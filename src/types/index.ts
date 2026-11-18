@@ -29,3 +29,24 @@ export type RiskScore = {
   openFindings: number;
   totalFindings: number;
 };
+
+export type DomainAsset = {
+  id: string;
+  hostname: string;
+  ip?: string;
+  services: number;
+  lastScan?: string;
+  open: SeverityCounts;
+};
+
+export type VerificationMethod = "dns" | "file";
+
+export type VerificationRecord = {
+  name: string;
+  value: string;
+};
+
+export type VerificationFile = {
+  path: string;
+  content: string;
+};
