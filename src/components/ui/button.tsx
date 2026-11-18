@@ -15,6 +15,15 @@ const variants: Record<Variant, string> = {
   ghost: "bg-transparent text-muted hover:bg-line hover:text-text",
 };
 
+export function buttonClasses(variant: Variant = "primary", className?: string) {
+  return cn(
+    "inline-flex h-[46px] items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors",
+    "disabled:cursor-not-allowed disabled:opacity-60",
+    variants[variant],
+    className,
+  );
+}
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant = "primary", loading = false, fullWidth = false, className, children, disabled, ...props },
   ref,
@@ -24,13 +33,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={cn(
-        "inline-flex h-[46px] items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold transition-colors",
-        "disabled:cursor-not-allowed disabled:opacity-60",
-        variants[variant],
-        fullWidth && "w-full",
-        className,
-      )}
+      className={buttonClasses(variant, cn(fullWidth && "w-full", className))}
       {...props}
     >
       {loading && (
