@@ -1,4 +1,5 @@
 import type { Severity } from "@/constants/severity";
+import type { FindingStatus } from "@/constants/finding-status";
 
 export type SeverityCounts = Record<Severity, number>;
 
@@ -49,4 +50,32 @@ export type VerificationRecord = {
 export type VerificationFile = {
   path: string;
   content: string;
+};
+
+export type Finding = {
+  id: string;
+  title: string;
+  asset: string;
+  severity: Severity;
+  status: FindingStatus;
+  cvss: number;
+  epss?: number;
+  kev: boolean;
+  cve?: string;
+  detectedAt?: string;
+};
+
+export type FindingExplanation = {
+  summary: string;
+  impact: string;
+  steps: string[];
+};
+
+export type FindingDetail = Finding & {
+  cwe?: string;
+  port?: string;
+  service?: string;
+  evidence?: string;
+  explanation?: FindingExplanation;
+  references?: { label: string; url: string }[];
 };
