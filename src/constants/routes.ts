@@ -5,6 +5,7 @@ export const ROUTES = {
   mfaSetup: "/mfa/setup",
   mfaBackup: "/mfa/backup",
   mfaLocked: "/mfa/locked",
+  sessionExpired: "/session-expired",
   dashboard: "/dashboard",
   domains: "/domains",
   newDomain: "/domains/new",
@@ -17,4 +18,4 @@ export const ROUTES = {
   settings: "/settings",
 } as const;
 
-export const PUBLIC_ROUTES = [ROUTES.login, ROUTES.register, ROUTES.mfa, ROUTES.mfaSetup, ROUTES.mfaBackup, ROUTES.mfaLocked];
+export const PUBLIC_ROUTES = [ROUTES.login, ROUTES.register, ROUTES.mfa, ROUTES.mfaSetup, ROUTES.mfaBackup, ROUTES.mfaLocked, ROUTES.sessionExpired];

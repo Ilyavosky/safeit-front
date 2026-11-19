@@ -107,3 +107,23 @@ export type AuditEntry = {
   target?: string;
   ip?: string;
 };
+
+
+export type AssetService = {
+  port: number;
+  protocol: "tcp" | "udp";
+  service: string;
+  product?: string;
+  version?: string;
+  tls?: boolean;
+};
+
+export type AssetDetail = {
+  id: string;
+  hostname: string;
+  domainId: string;
+  domain: string;
+  ip?: string;
+  lastScan?: string;
+  technologies?: string[];
+};

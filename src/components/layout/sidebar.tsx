@@ -14,7 +14,7 @@ const svg = (d: React.ReactNode) => (
   </svg>
 );
 
-const MONITOREO: NavItem[] = [
+export const MONITOREO: NavItem[] = [
   {
     href: ROUTES.dashboard,
     match: ROUTES.dashboard,
@@ -52,7 +52,7 @@ const MONITOREO: NavItem[] = [
   },
 ];
 
-const SEGUIMIENTO: NavItem[] = [
+export const SEGUIMIENTO: NavItem[] = [
   {
     href: ROUTES.report("ultimo"),
     match: "/reports",
@@ -84,7 +84,17 @@ const SEGUIMIENTO: NavItem[] = [
   },
 ];
 
-function NavGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
+export function NavGroup({
+  title,
+  items,
+  pathname,
+  onNavigate,
+}: {
+  title: string;
+  items: NavItem[];
+  pathname: string;
+  onNavigate?: () => void;
+}) {
   return (
     <div>
       <p className="mb-2 mt-[26px] px-3 text-xs font-medium text-[#7f8792]">{title}</p>
@@ -95,6 +105,7 @@ function NavGroup({ title, items, pathname }: { title: string; items: NavItem[];
             <Link
               key={item.label}
               href={item.href}
+              onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
                 "group flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium transition-colors",
@@ -113,8 +124,14 @@ function NavGroup({ title, items, pathname }: { title: string; items: NavItem[];
   );
 }
 
-export function Sidebar() {
+type SidebarProps = {
+  userName?: string;
+  nextScan?: string;
+};
+
+export function Sidebar({ userName, nextScan }: SidebarProps) {
   const pathname = usePathname();
+  const initial = userName?.trim().charAt(0).toUpperCase();
 
   return (
     <aside className="hidden h-screen flex-col border-r border-[#262a30] bg-[#17191d] px-4 pb-[18px] pt-[22px] lg:sticky lg:top-0 lg:flex">
@@ -136,13 +153,28 @@ export function Sidebar() {
           )}
           <p className="text-sm font-semibold text-text">Próximo escaneo</p>
         </div>
-        <p className="mt-1.5 text-[13px] text-[#c3cbe6]">example.com</p>
+        {nextScan ? (
+          <p className="mt-1.5 text-[13px] text-[#c3cbe6]">{nextScan}</p>
+        ) : (
+          <span className="mt-2.5 block h-2.5 w-28 rounded-full bg-[#2c3550]" aria-hidden="true" />
+        )}
       </div>
 
       <div className="mt-3.5 flex items-center gap-3 border-t border-[#262a30] px-2 pt-3">
-        <span className="grid size-[38px] flex-none place-items-center rounded-full bg-accent text-sm font-bold text-accent-fg">U</span>
+        <span className="grid size-[38px] flex-none place-items-center rounded-full bg-accent text-sm font-bold text-accent-fg">
+          {initial ?? svg(
+            <>
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c1.5-3.5 4.4-5 8-5s6.5 1.5 8 5" />
+            </>,
+          )}
+        </span>
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="truncate text-sm font-semibold"></p>
+          {userName ? (
+            <p className="truncate text-sm font-semibold">{userName}</p>
+          ) : (
+            <span className="block h-2.5 w-24 rounded-full bg-line" aria-hidden="true" />
+          )}
         </div>
         <Link
           href={ROUTES.login}
