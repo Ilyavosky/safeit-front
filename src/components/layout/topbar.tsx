@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { Logo } from "./logo";
+import { MobileNav } from "./mobile-nav";
 import { ROUTES } from "@/constants/routes";
 
 export function Topbar() {
   return (
     <header className="flex h-[68px] flex-none items-center gap-3.5 border-b border-[#262a30] px-5 sm:px-8">
-      <Link href={ROUTES.dashboard} className="lg:hidden" aria-label="SafeIT, ir al inicio">
-        <Logo />
-      </Link>
+      <MobileNav />
+        <Link href={ROUTES.dashboard} className="lg:hidden" aria-label="SafeIT, ir al inicio">
+          <Logo />
+        </Link>
 
       <label className="hidden h-[42px] w-[380px] items-center gap-2.5 rounded-xl border border-line bg-[#1b1e23] px-3.5 text-[#80878f] focus-within:border-accent sm:flex">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
