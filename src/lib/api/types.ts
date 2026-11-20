@@ -24,3 +24,7 @@ export type AuditChainResponse = S["AuditChainResponse"];
 export type MfaSetupResponse = S["MfaSetupResponse"];
 export type VerificationMethod = S["VerificationMethod"];
 export type EndpointResponse = S["EndpointResponse"];
+export type PublicAnalysisResponse = S["PublicAnalysisResponse"];
+export type PublicAnalysisDetailResponse = S["PublicAnalysisDetailResponse"];
+export type PublicHostResponse = S["PublicHostResponse"];
+export type HostKind = S["HostKind"];

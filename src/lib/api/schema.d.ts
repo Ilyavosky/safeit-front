@@ -413,6 +413,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/public-analyses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Public Analyses */
+        get: operations["list_public_analyses_public_analyses_get"];
+        put?: never;
+        /** Start Public Analysis */
+        post: operations["start_public_analysis_public_analyses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public-analyses/{analysis_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Public Analysis */
+        get: operations["read_public_analysis_public_analyses__analysis_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recommendations/{recommendation_id}": {
         parameters: {
             query?: never;
@@ -818,6 +853,11 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * HostKind
+         * @enum {string}
+         */
+        HostKind: "web_app" | "api" | "mail" | "login_panel" | "docs" | "blog" | "redirect" | "no_service";
+        /**
          * JobStatus
          * @enum {string}
          */
@@ -869,6 +909,105 @@ export interface components {
             email?: string | null;
             /** New Password */
             new_password?: string | null;
+        };
+        /** PublicAnalysisCreate */
+        PublicAnalysisCreate: {
+            /** Accept Notice */
+            accept_notice: boolean;
+            /** Domain */
+            domain: string;
+        };
+        /** PublicAnalysisDetailResponse */
+        PublicAnalysisDetailResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Domain */
+            domain: string;
+            /** Error */
+            error: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Hosts */
+            hosts: components["schemas"]["PublicHostResponse"][];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Stats */
+            stats: {
+                [key: string]: unknown;
+            };
+            status: components["schemas"]["JobStatus"];
+            /** Summary */
+            summary: string | null;
+            /** Summary Model */
+            summary_model: string | null;
+        };
+        /** PublicAnalysisResponse */
+        PublicAnalysisResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Domain */
+            domain: string;
+            /** Error */
+            error: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Stats */
+            stats: {
+                [key: string]: unknown;
+            };
+            status: components["schemas"]["JobStatus"];
+            /** Summary */
+            summary: string | null;
+            /** Summary Model */
+            summary_model: string | null;
+        };
+        /** PublicHostResponse */
+        PublicHostResponse: {
+            /** Host */
+            host: string;
+            /** Http Status */
+            http_status: number | null;
+            kind: components["schemas"]["HostKind"];
+            /** Provider */
+            provider: string | null;
+            /** Redirect Host */
+            redirect_host: string | null;
+            /** Security Headers */
+            security_headers: string[];
+            /** Technologies */
+            technologies: string[];
+            /** Title */
+            title: string | null;
+            /** Tls Issuer */
+            tls_issuer: string | null;
+            /** Tls Valid */
+            tls_valid: boolean | null;
+            /** Tls Valid Until */
+            tls_valid_until: string | null;
         };
         /** RecommendationResponse */
         RecommendationResponse: {
@@ -1847,6 +1986,90 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    list_public_analyses_public_analyses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAnalysisResponse"][];
+                };
+            };
+        };
+    };
+    start_public_analysis_public_analyses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublicAnalysisCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAnalysisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_public_analysis_public_analyses__analysis_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicAnalysisDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
