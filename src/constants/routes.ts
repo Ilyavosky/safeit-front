@@ -14,6 +14,8 @@ export const ROUTES = {
   findings: "/findings",
   finding: (findingId: string) => `/findings/${findingId}`,
   report: (scanId: string) => `/reports/${scanId}`,
+  publicAnalysis: "/public-analysis",
+  publicAnalysisDetail: (analysisId: string) => `/public-analysis/${analysisId}`,
   audit: "/audit",
   settings: "/settings",
 } as const;

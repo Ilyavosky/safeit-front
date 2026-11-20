@@ -40,6 +40,17 @@ export const MONITOREO: NavItem[] = [
     ),
   },
   {
+    href: ROUTES.publicAnalysis,
+    match: ROUTES.publicAnalysis,
+    label: "Análisis público",
+    icon: svg(
+      <>
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="M20 20l-4-4M8.5 11h5M11 8.5v5" />
+      </>,
+    ),
+  },
+  {
     href: ROUTES.findings,
     match: "/findings",
     label: "Hallazgos",
