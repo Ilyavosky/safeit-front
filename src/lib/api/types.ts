@@ -1,0 +1,26 @@
+import type { components } from "./schema";
+
+type S = components["schemas"];
+
+export type TokenResponse = S["TokenResponse"];
+export type MfaChallengeResponse = S["MfaChallengeResponse"];
+export type UserResponse = S["UserResponse"];
+export type DomainResponse = S["DomainResponse"];
+export type DashboardResponse = S["DashboardResponse"];
+export type FindingResponse = S["FindingResponse"];
+export type FindingDetailResponse = S["FindingDetailResponse"];
+export type FindingPageResponse = S["FindingPageResponse"];
+export type FindingLifecycle = S["FindingLifecycle"];
+export type RemediationStatus = S["RemediationStatus"];
+export type ReportResponse = S["ReportResponse"];
+export type RecommendationResponse = S["RecommendationResponse"];
+export type RecommendationStatus = S["RecommendationStatus"];
+export type AssetResponse = S["AssetResponse"];
+export type AssetDetailResponse = S["AssetDetailResponse"];
+export type ScanResponse = S["ScanResponse"];
+export type CveResponse = S["CveResponse"];
+export type AuditEntryResponse = S["AuditEntryResponse"];
+export type AuditChainResponse = S["AuditChainResponse"];
+export type MfaSetupResponse = S["MfaSetupResponse"];
+export type VerificationMethod = S["VerificationMethod"];
+export type EndpointResponse = S["EndpointResponse"];
