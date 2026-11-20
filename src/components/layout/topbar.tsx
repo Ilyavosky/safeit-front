@@ -1,9 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Logo } from "./logo";
 import { MobileNav } from "./mobile-nav";
 import { ROUTES } from "@/constants/routes";
+import { logout } from "@/lib/api/auth";
+import { useSession } from "@/hooks/use-session";
 
 export function Topbar() {
+  const router = useRouter();
+  const { user } = useSession();
+
+  async function signOut() {
+    try {
+      await logout();
+    } finally {
+      router.replace(ROUTES.login);
+    }
+  }
+
   return (
     <header className="flex h-[68px] flex-none items-center gap-3.5 border-b border-[#262a30] px-5 sm:px-8">
       <MobileNav />
@@ -26,6 +42,7 @@ export function Topbar() {
       </label>
 
       <div className="ml-auto flex items-center gap-3">
+        {user && <span className="hidden max-w-[220px] truncate text-[13.5px] text-muted md:block">{user.email}</span>}
         <button
           type="button"
           aria-label="Notificaciones"
@@ -35,6 +52,13 @@ export function Topbar() {
             <path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15L6 16z" />
             <path d="M10 20a2 2 0 004 0" />
           </svg>
+        </button>
+        <button
+          type="button"
+          onClick={signOut}
+          className="h-[42px] rounded-xl border border-line bg-[#1b1e23] px-3.5 text-[13.5px] text-[#c9ced5] hover:bg-line"
+        >
+          Salir
         </button>
       </div>
     </header>

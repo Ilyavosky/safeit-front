@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button, buttonClasses } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/constants/routes";
+import { logout, updateProfile } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 import { cn } from "@/lib/utils/cn";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -23,22 +26,39 @@ function Section({ title, description, children }: { title: string; description:
   );
 }
 
-function ProfileCard({ name: initialName, email: initialEmail }: { name?: string; email?: string }) {
-  const [name, setName] = useState(initialName ?? "");
+function ProfileCard({ email: initialEmail }: { email?: string }) {
   const [email, setEmail] = useState(initialEmail ?? "");
-  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [message, setMessage] = useState<{ ok: boolean; text: string }>();
+  const [loading, setLoading] = useState(false);
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (initialEmail) setEmail(initialEmail);
+  }, [initialEmail]);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const next: typeof errors = {};
-    if (!name.trim()) next.name = "Escribe tu nombre.";
     if (!EMAIL_RE.test(email.trim())) next.email = "Escribe un correo válido, por ejemplo tu@correo.com.";
+    if (!password) next.password = "Escribe tu contraseña actual para confirmar el cambio.";
     setErrors(next);
+    setMessage(undefined);
+    if (next.email || next.password) return;
+    setLoading(true);
+    try {
+      await updateProfile({ email: email.trim().toLowerCase(), current_password: password });
+      setPassword("");
+      setMessage({ ok: true, text: "Correo actualizado." });
+    } catch (err) {
+      setMessage({ ok: false, text: err instanceof ApiError ? err.message : "No pudimos guardar los cambios." });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <form onSubmit={submit} noValidate className="space-y-4">
-      <Input label="Nombre" name="name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} error={errors.name} />
       <Input
         label="Correo"
         name="email"
@@ -49,8 +69,14 @@ function ProfileCard({ name: initialName, email: initialEmail }: { name?: string
         hint="Aquí te llegan los avisos de hallazgos críticos."
         error={errors.email}
       />
+      <Input label="Contraseña actual" name="confirm-password" revealable autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
+      {message && (
+        <p role="status" className={cn("text-[13px]", message.ok ? "text-[#6fd39a]" : "text-[#ff8f8f]")}>
+          {message.text}
+        </p>
+      )}
       <div className="flex justify-end pt-1">
-        <Button type="submit" className="h-[42px]">
+        <Button type="submit" className="h-[42px]" loading={loading}>
           Guardar cambios
         </Button>
       </div>
@@ -62,13 +88,28 @@ function PasswordCard() {
   const [form, setForm] = useState({ current: "", next: "", confirm: "" });
   const [errors, setErrors] = useState<{ current?: string; next?: string; confirm?: string }>({});
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
+  const [message, setMessage] = useState<{ ok: boolean; text: string }>();
+  const [loading, setLoading] = useState(false);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const err: typeof errors = {};
     if (!form.current) err.current = "Escribe tu contraseña actual.";
     if (form.next.length < 12) err.next = "Usa al menos 12 caracteres.";
     if (form.confirm !== form.next || !form.confirm) err.confirm = "Las contraseñas no coinciden.";
     setErrors(err);
+    setMessage(undefined);
+    if (err.current || err.next || err.confirm) return;
+    setLoading(true);
+    try {
+      await updateProfile({ current_password: form.current, new_password: form.next });
+      setForm({ current: "", next: "", confirm: "" });
+      setMessage({ ok: true, text: "Contraseña actualizada." });
+    } catch (e2) {
+      setMessage({ ok: false, text: e2 instanceof ApiError ? e2.message : "No pudimos cambiar la contraseña." });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -78,8 +119,13 @@ function PasswordCard() {
         <Input label="Nueva contraseña" name="new" revealable autoComplete="new-password" value={form.next} onChange={(e) => setForm({ ...form, next: e.target.value })} error={errors.next} />
         <Input label="Confirmar" name="confirm" revealable autoComplete="new-password" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} error={errors.confirm} />
       </div>
+      {message && (
+        <p role="status" className={cn("text-[13px]", message.ok ? "text-[#6fd39a]" : "text-[#ff8f8f]")}>
+          {message.text}
+        </p>
+      )}
       <div className="flex justify-end pt-1">
-        <Button type="submit" variant="secondary" className="h-[42px]">
+        <Button type="submit" variant="secondary" className="h-[42px]" loading={loading}>
           Cambiar contraseña
         </Button>
       </div>
@@ -87,7 +133,7 @@ function PasswordCard() {
   );
 }
 
-function MfaCard({ mfaEnabled, backupLeft }: { mfaEnabled?: boolean; backupLeft?: number }) {
+function MfaCard({ mfaEnabled }: { mfaEnabled?: boolean }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3.5">
@@ -111,14 +157,7 @@ function MfaCard({ mfaEnabled, backupLeft }: { mfaEnabled?: boolean; backupLeft?
           )}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3 rounded-xl bg-[#181b20] px-4 py-3">
-        <span className="text-[13.5px] text-muted">Códigos de respaldo sin usar</span>
-        {backupLeft !== undefined ? <span className="font-semibold tabular-nums">{backupLeft} de 10</span> : <Skeleton className="w-12" />}
-      </div>
       <div className="flex flex-wrap justify-end gap-2.5">
-        <Button variant="secondary" className="h-[42px]">
-          Generar códigos nuevos
-        </Button>
         <Link href={ROUTES.mfaSetup} className={buttonClasses("primary", "h-[42px]")}>
           {mfaEnabled ? "Cambiar dispositivo" : "Configurar MFA"}
         </Link>
@@ -168,40 +207,54 @@ function NotificationsCard({ initial }: { initial?: Record<NotificationKey, bool
   );
 }
 
+function SignOutCard() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function signOut() {
+    setLoading(true);
+    try {
+      await logout();
+    } finally {
+      router.replace(ROUTES.login);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <p className="text-[14px] text-muted">Cierra la sesión en este dispositivo y revoca su token de acceso.</p>
+      <Button variant="secondary" className="h-[42px]" onClick={signOut} loading={loading}>
+        Cerrar sesión
+      </Button>
+    </div>
+  );
+}
+
 export function ProfileForm({
-  name,
   email,
   mfaEnabled,
-  backupLeft,
   notifications,
 }: {
-  name?: string;
   email?: string;
   mfaEnabled?: boolean;
-  backupLeft?: number;
   notifications?: Record<NotificationKey, boolean>;
 }) {
   return (
     <div className="space-y-6">
       <Section title="Perfil" description="Tu nombre y el correo con el que entras a SafeIT.">
-        <ProfileCard name={name} email={email} />
+        <ProfileCard email={email} />
       </Section>
       <Section title="Contraseña" description="Usa una contraseña larga que no uses en otros sitios.">
         <PasswordCard />
       </Section>
       <Section title="Seguridad" description="El segundo paso protege tu cuenta aunque alguien conozca tu contraseña.">
-        <MfaCard mfaEnabled={mfaEnabled} backupLeft={backupLeft} />
+        <MfaCard mfaEnabled={mfaEnabled} />
       </Section>
       <Section title="Notificaciones" description="Elige qué avisos quieres recibir por correo.">
         <NotificationsCard initial={notifications} />
       </Section>
-      <Section title="Sesiones" description="Si perdiste un dispositivo, cierra la sesión en todos.">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="text-[14px] text-muted">Tendrás que volver a entrar en este y en los demás dispositivos.</p>
-          <Button variant="secondary" className="h-[42px]">
-            Cerrar todas las sesiones
-          </Button>
-        </div>
+      <Section title="Sesión" description="Termina tu sesión en este dispositivo.">
+        <SignOutCard />
       </Section>
     </div>
   );

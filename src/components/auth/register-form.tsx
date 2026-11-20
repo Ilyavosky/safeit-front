@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, ErrorIcon } from "@/components/ui/input";
 import { AuthCard } from "./auth-card";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils/cn";
+import { login, register } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -37,6 +40,9 @@ export function RegisterForm() {
   const [fields, setFields] = useState<Fields>({ name: "", email: "", password: "", passwordConfirm: "" });
   const [terms, setTerms] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
+  const [formError, setFormError] = useState<string>();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const score = strength(fields.password);
   const meterColor = score <= 1 ? "bg-[#ef5f5f]" : score === 2 ? "bg-[#e8c14b]" : "bg-[#6fd39a]";
@@ -46,9 +52,22 @@ export function RegisterForm() {
     if (errors[key]) setErrors((er) => ({ ...er, [key]: undefined }));
   };
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setErrors(validate(fields, terms));
+    const next = validate(fields, terms);
+    setErrors(next);
+    setFormError(undefined);
+    if (Object.values(next).some(Boolean)) return;
+    setLoading(true);
+    const email = fields.email.trim().toLowerCase();
+    try {
+      await register(email, fields.password);
+      await login(email, fields.password);
+      router.replace(ROUTES.dashboard);
+    } catch (err) {
+      setFormError(err instanceof ApiError ? err.message : "No pudimos crear la cuenta. Intenta de nuevo.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -128,7 +147,13 @@ export function RegisterForm() {
           )}
         </div>
 
-        <Button type="submit" fullWidth>
+        {formError && (
+          <p role="alert" className="text-[13px] text-[#ff8f8f]">
+            {formError}
+          </p>
+        )}
+
+        <Button type="submit" fullWidth loading={loading}>
           Crear cuenta
         </Button>
       </form>
