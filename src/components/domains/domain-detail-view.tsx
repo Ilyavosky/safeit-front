@@ -26,7 +26,7 @@ export function DomainDetailView({ domainId }: { domainId: string }) {
   const domain = useApi(() => getDomain(domainId), [domainId]);
   const verified = domain.data?.status === "verified";
   const dashboard = useApi(verified ? () => getDashboard({ domain_id: domainId }) : null, [domainId, verified]);
-  const assets = useApi(domain.data && verified ? () => listAssets(domain.data?.name) : null, [domain.data?.name, verified]);
+  const assets = useApi(verified ? () => listAssets(domainId) : null, [domainId, verified]);
 
   const [scanId, setScanId] = useState<string>();
   const [starting, setStarting] = useState<"recon" | "tests">();
