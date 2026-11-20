@@ -51,16 +51,19 @@ export function VerificationInstructions({
   domain,
   record,
   file,
+  fixedMethod,
 }: {
   domain?: string;
   record?: VerificationRecord;
   file?: VerificationFile;
+  fixedMethod?: VerificationMethod;
 }) {
-  const [method, setMethod] = useState<VerificationMethod>("dns");
+  const [picked, setMethod] = useState<VerificationMethod>("dns");
+  const method = fixedMethod ?? picked;
 
   return (
     <div>
-      <div role="tablist" aria-label="Método de verificación" className="inline-flex rounded-xl border border-line bg-field p-1">
+      <div role="tablist" aria-label="Método de verificación" className={cn("inline-flex rounded-xl border border-line bg-field p-1", fixedMethod && "hidden")}>
         {(
           [
             { id: "dns", label: "Registro DNS TXT" },

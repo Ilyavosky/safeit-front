@@ -59,7 +59,7 @@ function DomainRow({ domain }: { domain: DomainSummary }) {
           (worst ? <SeverityBadge severity={worst} /> : <span className="text-[13px] text-[#80878f]">Sin hallazgos</span>)}
         {domain.status === "scanning" && <Badge dot className="bg-[#232b45] text-[#a9bbff]">Escaneando</Badge>}
         {(domain.status === "pending" || domain.status === "failed") && (
-          <Link href={ROUTES.newDomain} className={buttonClasses("secondary", "h-[34px] rounded-[10px] px-3.5 text-[13px]")}>
+          <Link href={ROUTES.domain(domain.id)} className={buttonClasses("secondary", "h-[34px] rounded-[10px] px-3.5 text-[13px]")}>
             Verificar
           </Link>
         )}
