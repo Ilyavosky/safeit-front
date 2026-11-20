@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { ErrorIcon } from "@/components/ui/input";
 import { AuthCard } from "@/components/auth/auth-card";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils/cn";
+import { mfaEnable, mfaSetup } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 
 type MfaSetupProps = {
   qrCode?: string;
@@ -23,8 +26,29 @@ const TITLES = {
 
 const BACKUP_SLOTS = 10;
 
-export function MfaSetup({ qrCode, secret, backupCodes = [] }: MfaSetupProps) {
+export function MfaSetup({ backupCodes = [] }: MfaSetupProps) {
   const router = useRouter();
+  const [qrCode, setQrCode] = useState<string>();
+  const [secret, setSecret] = useState<string>();
+  const [loadError, setLoadError] = useState<string>();
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    mfaSetup()
+      .then(async (res) => {
+        const qr = await QRCode.toDataURL(res.otpauth_uri, { margin: 1, width: 296 });
+        if (cancelled) return;
+        setSecret(res.secret);
+        setQrCode(qr);
+      })
+      .catch((err) => {
+        if (!cancelled) setLoadError(err instanceof ApiError ? err.message : "No pudimos generar el código.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState<string>();
@@ -32,13 +56,20 @@ export function MfaSetup({ qrCode, secret, backupCodes = [] }: MfaSetupProps) {
   const [copied, setCopied] = useState(false);
   const hasCodes = backupCodes.length > 0;
 
-  function confirmCode(e: React.FormEvent<HTMLFormElement>) {
+  async function confirmCode(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (code.length !== 6) {
       setCodeError("Escribe los 6 dígitos del código.");
       return;
     }
-    setStep(3);
+    setSubmitting(true);
+    try {
+      await mfaEnable(code);
+      router.push(ROUTES.settings);
+    } catch (err) {
+      setCodeError(err instanceof ApiError ? err.message : "No pudimos confirmar el código.");
+      setSubmitting(false);
+    }
   }
 
   async function copyCodes() {
@@ -67,9 +98,9 @@ export function MfaSetup({ qrCode, secret, backupCodes = [] }: MfaSetupProps) {
       description={TITLES[step].description}
       header={
         <>
-          <p className="text-center text-[13px] text-muted">Configurar MFA, paso {step} de 3</p>
+          <p className="text-center text-[13px] text-muted">Configurar MFA, paso {step} de 2</p>
           <div className="mt-3 flex gap-1.5" aria-hidden="true">
-            {[1, 2, 3].map((n) => (
+            {[1, 2].map((n) => (
               <span key={n} className={cn("h-1 flex-1 rounded-full", n <= step ? "bg-accent" : "bg-line")} />
             ))}
           </div>
@@ -98,7 +129,12 @@ export function MfaSetup({ qrCode, secret, backupCodes = [] }: MfaSetupProps) {
           <div className="mt-2 flex h-11 items-center justify-center rounded-xl border border-line bg-field text-sm font-semibold tracking-[2px] text-[#dfe3e8]">
             {secret ?? <span className="h-2.5 w-40 rounded-full bg-line" aria-hidden="true" />}
           </div>
-          <Button type="button" fullWidth className="mt-5" onClick={() => setStep(2)}>
+          {loadError && (
+            <p role="alert" className="mt-3 text-center text-[13px] text-[#ff8f8f]">
+              {loadError}
+            </p>
+          )}
+          <Button type="button" fullWidth className="mt-5" disabled={!secret} onClick={() => setStep(2)}>
             Ya lo escaneé
           </Button>
         </div>
@@ -139,8 +175,8 @@ export function MfaSetup({ qrCode, secret, backupCodes = [] }: MfaSetupProps) {
               </p>
             )}
           </div>
-          <Button type="submit" fullWidth>
-            Confirmar y continuar
+          <Button type="submit" fullWidth loading={submitting}>
+            Activar MFA
           </Button>
           <Button type="button" variant="ghost" fullWidth onClick={() => setStep(1)}>
             Volver al código QR

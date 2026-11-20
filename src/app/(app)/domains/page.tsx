@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { buttonClasses } from "@/components/ui/button";
-import { DomainsTable } from "@/components/domains/domains-table";
+import { DomainsView } from "@/components/domains/domains-view";
 import { ROUTES } from "@/constants/routes";
 
 export const metadata: Metadata = { title: "Dominios" };
@@ -22,7 +22,7 @@ export default function DomainsPage() {
           </Link>
         }
       />
-      <DomainsTable />
+      <DomainsView />
     </>
   );
 }

@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { buttonClasses } from "@/components/ui/button";
-import { SeveritySummary } from "@/components/dashboard/severity-summary";
-import { AssetsOverview } from "@/components/dashboard/assets-overview";
-import { RecentFindings } from "@/components/dashboard/recent-findings";
+import { DashboardView } from "@/components/dashboard/dashboard-view";
 import { ROUTES } from "@/constants/routes";
 
 export const metadata: Metadata = { title: "Inicio" };
@@ -33,11 +31,7 @@ export default function DashboardPage() {
           </>
         }
       />
-      <SeveritySummary />
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <AssetsOverview />
-        <RecentFindings />
-      </div>
+      <DashboardView />
     </>
   );
 }

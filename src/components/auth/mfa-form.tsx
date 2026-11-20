@@ -1,20 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ErrorIcon } from "@/components/ui/input";
 import { AuthCard } from "./auth-card";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils/cn";
+import { verifyMfa } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
+import { MFA_TOKEN_KEY } from "./login-form";
 
 export function MfaForm() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (!sessionStorage.getItem(MFA_TOKEN_KEY)) router.replace(ROUTES.login);
+  }, [router]);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(code.length === 6 ? undefined : "Escribe los 6 dígitos del código.");
+    if (code.length !== 6) {
+      setError("Escribe los 6 dígitos del código.");
+      return;
+    }
+    const token = sessionStorage.getItem(MFA_TOKEN_KEY);
+    if (!token) {
+      router.replace(ROUTES.login);
+      return;
+    }
+    setLoading(true);
+    setError(undefined);
+    try {
+      await verifyMfa(token, code);
+      sessionStorage.removeItem(MFA_TOKEN_KEY);
+      router.replace(ROUTES.dashboard);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 429) {
+        router.replace(ROUTES.mfaLocked);
+        return;
+      }
+      setError(err instanceof ApiError ? err.message : "No pudimos verificar el código.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -55,15 +87,12 @@ export function MfaForm() {
           )}
         </div>
 
-        <Button type="submit" fullWidth>
+        <Button type="submit" fullWidth loading={loading}>
           Verificar
         </Button>
       </form>
 
       <div className="mt-[22px] flex flex-col items-center gap-2.5 border-t border-[#262a30] pt-4 text-sm">
-        <Link href={ROUTES.mfaBackup} className="text-accent hover:text-accent-hover">
-          Usar un código de respaldo
-        </Link>
         <p className="text-[13px] text-muted">
           ¿Primera vez?{" "}
           <Link href={ROUTES.mfaSetup} className="text-accent hover:text-accent-hover">
