@@ -1,12 +1,37 @@
+"use client";
+
+import { useState } from "react";
 import { buttonClasses } from "@/components/ui/button";
 
-export function DownloadPdfButton({ href }: { href?: string }) {
+export function DownloadPdfButton({ href, onDownload }: { href?: string; onDownload?: () => Promise<void> }) {
+  const [busy, setBusy] = useState(false);
   const icon = (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 4v11M7.5 10.5L12 15l4.5-4.5" />
       <path d="M5 19h14" />
     </svg>
   );
+
+  if (onDownload) {
+    return (
+      <button
+        type="button"
+        disabled={busy}
+        className={buttonClasses("primary", "h-[42px]")}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await onDownload();
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {icon}
+        {busy ? "Preparando…" : "Descargar PDF"}
+      </button>
+    );
+  }
 
   if (!href) {
     return (

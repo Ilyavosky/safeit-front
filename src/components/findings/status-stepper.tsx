@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FINDING_STATUSES, FINDING_STATUS_LABEL, type FindingStatus } from "@/constants/finding-status";
+import { ApiError } from "@/lib/api/client";
 import { cn } from "@/lib/utils/cn";
+
+const SETTABLE: FindingStatus[] = ["discovered", "remediating", "resolved"];
 
 const FLOW: FindingStatus[] = ["discovered", "analyzing", "confirmed", "remediating", "resolved"];
 
@@ -17,8 +20,36 @@ const HINT: Record<FindingStatus, string> = {
   false_positive: "Se descartó, no es un riesgo real.",
 };
 
-export function StatusStepper({ status }: { status?: FindingStatus }) {
+export function StatusStepper({
+  status,
+  onSave,
+}: {
+  status?: FindingStatus;
+  onSave?: (status: FindingStatus, reason?: string) => Promise<void>;
+}) {
   const [selected, setSelected] = useState<FindingStatus | "">(status ?? "");
+  const [reason, setReason] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string>();
+  const needsReason = status === "resolved" && selected !== "" && selected !== status;
+
+  async function save() {
+    if (!onSave || selected === "") return;
+    if (needsReason && reason.trim().length < 5) {
+      setError("Explica en pocas palabras por qué reabres el hallazgo (mínimo 5 caracteres).");
+      return;
+    }
+    setSaving(true);
+    setError(undefined);
+    try {
+      await onSave(selected, needsReason ? reason.trim() : undefined);
+      setReason("");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "No pudimos cambiar el estado.");
+    } finally {
+      setSaving(false);
+    }
+  }
   const current = status ? FLOW.indexOf(status) : -1;
   const isFalse = status === "false_positive";
 
@@ -79,16 +110,31 @@ export function StatusStepper({ status }: { status?: FindingStatus }) {
             <option value="" disabled>
               Elige un estado
             </option>
-            {FINDING_STATUSES.map((s) => (
-              <option key={s} value={s}>
+            {FINDING_STATUSES.filter((s) => SETTABLE.includes(s) || s === status).map((s) => (
+              <option key={s} value={s} disabled={!SETTABLE.includes(s)}>
                 {FINDING_STATUS_LABEL[s]}
               </option>
             ))}
           </select>
-          <Button className="h-10 px-4" disabled={selected === "" || selected === status}>
+          <Button className="h-10 px-4" loading={saving} onClick={save} disabled={!onSave || selected === "" || selected === status}>
             Guardar
           </Button>
         </div>
+        {needsReason && (
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="¿Por qué lo reabres?"
+            rows={2}
+            maxLength={500}
+            className="mt-2 w-full resize-none rounded-xl border border-line bg-field px-3 py-2 text-[14px] text-text placeholder:text-[#4a515c] focus:border-accent focus:shadow-focus focus:outline-none"
+          />
+        )}
+        {error && (
+          <p role="alert" className="mt-2 text-[13px] text-[#ff8f8f]">
+            {error}
+          </p>
+        )}
       </div>
     </Card>
   );

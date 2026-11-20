@@ -2,8 +2,17 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SeverityBadge } from "@/components/findings/severity-badge";
 import type { Recommendation } from "@/types";
+import type { RecommendationStatus } from "@/lib/api/types";
 
-export function RecommendationsList({ items }: { items?: Recommendation[] }) {
+type Item = Recommendation & { status?: RecommendationStatus };
+
+export function RecommendationsList({
+  items,
+  onStatusChange,
+}: {
+  items?: Item[];
+  onStatusChange?: (id: string, status: RecommendationStatus) => void;
+}) {
   return (
     <Card className="rounded-2xl border-[#2a2e35]">
       <div className="px-6 pb-3 pt-5">
@@ -40,9 +49,20 @@ export function RecommendationsList({ items }: { items?: Recommendation[] }) {
                   <SeverityBadge severity={r.severity} />
                 </div>
                 <p className="mt-1 text-[14px] leading-relaxed text-muted">{r.detail}</p>
-                <p className="mt-1.5 text-[13px] text-[#80878f]">
-                  Resuelve {r.findings} {r.findings === 1 ? "hallazgo" : "hallazgos"}
-                </p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[13px] text-[#80878f]">
+                  <span>
+                    Resuelve {r.findings} {r.findings === 1 ? "hallazgo" : "hallazgos"}
+                  </span>
+                  {onStatusChange && r.status && (
+                    <button
+                      type="button"
+                      onClick={() => onStatusChange(r.id, r.status === "done" ? "pending" : "done")}
+                      className="font-medium text-accent hover:text-accent-hover"
+                    >
+                      {r.status === "done" ? "Hecha · deshacer" : "Marcar como hecha"}
+                    </button>
+                  )}
+                </div>
               </div>
             </li>
           ))}
