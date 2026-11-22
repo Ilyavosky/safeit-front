@@ -6,10 +6,12 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { MONITOREO, NavGroup, SEGUIMIENTO } from "./sidebar";
 import { ROUTES } from "@/constants/routes";
+import { useSignOut } from "@/hooks/use-sign-out";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { signOut, signingOut } = useSignOut();
 
   useEffect(() => {
     if (!open) return;
@@ -57,16 +59,20 @@ export function MobileNav() {
             </div>
             <NavGroup title="Monitoreo" items={MONITOREO} pathname={pathname} onNavigate={() => setOpen(false)} />
             <NavGroup title="Seguimiento" items={SEGUIMIENTO} pathname={pathname} onNavigate={() => setOpen(false)} />
-            <Link
-              href={ROUTES.login}
-              onClick={() => setOpen(false)}
-              className="mt-auto flex h-11 items-center gap-3 rounded-[10px] px-3 text-[15px] font-medium text-[#a8aeb7] hover:bg-[#1f2228] hover:text-text"
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                signOut();
+              }}
+              disabled={signingOut}
+              className="mt-auto flex h-11 items-center gap-3 rounded-[10px] px-3 text-left text-[15px] font-medium text-[#a8aeb7] hover:bg-[#1f2228] hover:text-text disabled:opacity-50"
             >
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M15 4h3.5A1.5 1.5 0 0120 5.5v13a1.5 1.5 0 01-1.5 1.5H15M10 16l4-4-4-4M14 12H4" />
               </svg>
               Cerrar sesión
-            </Link>
+            </button>
           </div>
         </div>
       )}
