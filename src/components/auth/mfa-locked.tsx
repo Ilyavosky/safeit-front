@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Logo } from "@/components/layout/logo";
 import { ROUTES } from "@/constants/routes";
 
-const LOCK_SECONDS = 15 * 60;
+const LOCK_SECONDS = 60;
 
 function format(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -35,12 +35,12 @@ export function MfaLocked() {
       </div>
       <h1 className="mt-[18px] text-2xl font-semibold tracking-[-0.02em]">Acceso pausado</h1>
       <p className="mt-1.5 text-sm text-muted">
-        Hubo 5 códigos incorrectos seguidos. Por seguridad, espera para volver a intentarlo.
+        Hubo 5 códigos incorrectos seguidos. Por seguridad, espera un momento para volver a intentarlo.
       </p>
 
       <div className="mt-[22px]" aria-live="polite">
         <p className="text-[38px] font-bold tabular-nums tracking-[-0.02em]">{format(left)}</p>
-        <p className="text-[13px] text-[#80878f]">{left > 0 ? "minutos restantes" : "Ya puedes volver a intentarlo"}</p>
+        <p className="text-[13px] text-[#80878f]">{left > 0 ? "restantes" : "Ya puedes volver a intentarlo"}</p>
       </div>
 
       <div className="mt-[22px] flex items-start gap-2.5 rounded-xl border border-[#2c3550] bg-[#232b45] px-3.5 py-3 text-left text-[13.5px] text-[#b8c6ff]">
@@ -52,10 +52,10 @@ export function MfaLocked() {
       </div>
 
       <Link
-        href={ROUTES.mfaBackup}
+        href={ROUTES.mfa}
         className="mt-[18px] inline-flex h-[46px] w-full items-center justify-center rounded-xl border border-line-strong bg-[#23272e] text-sm font-semibold text-text hover:bg-line"
       >
-        Usar un código de respaldo
+        Intentar de nuevo
       </Link>
       <p className="mt-4 text-sm">
         <Link href={ROUTES.login} className="text-accent hover:text-accent-hover">
