@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { ROUTES } from "@/constants/routes";
+import { useSignOut } from "@/hooks/use-sign-out";
 import { cn } from "@/lib/utils/cn";
 import { useSession } from "@/hooks/use-session";
 import { useApi } from "@/hooks/use-api";
@@ -142,6 +143,7 @@ export function NavGroup({
 export function Sidebar() {
   const pathname = usePathname();
   const { user, ready } = useSession();
+  const { signOut, signingOut } = useSignOut();
   const lastScan = useApi(ready && user ? async () => (await listAudit({ action: "scan.recon_finished", limit: 1 }))[0] ?? null : null, [ready, user?.id]);
   const userName = user?.email;
   const initial = userName?.trim().charAt(0).toUpperCase();
@@ -191,13 +193,16 @@ export function Sidebar() {
             <span className="block h-2.5 w-24 rounded-full bg-line" aria-hidden="true" />
           )}
         </div>
-        <Link
-          href={ROUTES.login}
+        <button
+          type="button"
+          onClick={signOut}
+          disabled={signingOut}
           aria-label="Cerrar sesión"
-          className="grid size-9 place-items-center rounded-lg text-[#80878f] hover:bg-[#1f2228] hover:text-text"
+          title="Cerrar sesión"
+          className="grid size-9 place-items-center rounded-lg text-[#80878f] hover:bg-[#1f2228] hover:text-text disabled:opacity-50"
         >
           {svg(<path d="M15 4h3.5A1.5 1.5 0 0120 5.5v13a1.5 1.5 0 01-1.5 1.5H15M10 16l4-4-4-4M14 12H4" />)}
-        </Link>
+        </button>
       </div>
     </aside>
   );
