@@ -10,7 +10,7 @@ import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils/cn";
 import { verifyMfa } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
-import { MFA_TOKEN_KEY } from "./login-form";
+import { mfaChallenge } from "@/lib/auth/mfa-challenge";
 
 export function MfaForm() {
   const [code, setCode] = useState("");
@@ -19,7 +19,7 @@ export function MfaForm() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!sessionStorage.getItem(MFA_TOKEN_KEY)) router.replace(ROUTES.login);
+    if (!mfaChallenge.get()) router.replace(ROUTES.login);
   }, [router]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -28,7 +28,7 @@ export function MfaForm() {
       setError("Escribe los 6 dígitos del código.");
       return;
     }
-    const token = sessionStorage.getItem(MFA_TOKEN_KEY);
+    const token = mfaChallenge.get();
     if (!token) {
       router.replace(ROUTES.login);
       return;
@@ -37,7 +37,7 @@ export function MfaForm() {
     setError(undefined);
     try {
       await verifyMfa(token, code);
-      sessionStorage.removeItem(MFA_TOKEN_KEY);
+      mfaChallenge.clear();
       router.replace(ROUTES.dashboard);
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) {

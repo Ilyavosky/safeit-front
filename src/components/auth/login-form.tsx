@@ -9,8 +9,7 @@ import { AuthCard } from "./auth-card";
 import { ROUTES } from "@/constants/routes";
 import { login } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
-
-export const MFA_TOKEN_KEY = "safeit_mfa_token";
+import { mfaChallenge } from "@/lib/auth/mfa-challenge";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -37,7 +36,7 @@ export function LoginForm() {
     try {
       const result = await login(email.trim().toLowerCase(), password);
       if (result.kind === "mfa") {
-        sessionStorage.setItem(MFA_TOKEN_KEY, result.mfaToken);
+        mfaChallenge.set(result.mfaToken);
         router.push(ROUTES.mfa);
       } else {
         router.replace(ROUTES.dashboard);
