@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
     url.search = "";
     return NextResponse.redirect(url);
   }
-  if (hasSession && (pathname === ROUTES.login || pathname === ROUTES.register)) {
+  if (hasSession && (pathname === ROUTES.login || pathname === ROUTES.register || pathname === ROUTES.forgotPassword)) {
     const url = request.nextUrl.clone();
     url.pathname = ROUTES.dashboard;
     return NextResponse.redirect(url);

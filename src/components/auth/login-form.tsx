@@ -70,9 +70,9 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
           labelAside={
-            <a href="#" className="text-[13px] text-muted hover:text-text">
+            <Link href={ROUTES.forgotPassword} className="text-[13px] text-muted hover:text-text">
               ¿La olvidaste?
-            </a>
+            </Link>
           }
         />
 
