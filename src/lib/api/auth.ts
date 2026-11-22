@@ -30,6 +30,18 @@ export function register(email: string, password: string) {
   return api<UserResponse>("/auth/register", { method: "POST", body: { email, password }, auth: false });
 }
 
+export function forgotPassword(email: string) {
+  return api<{ message: string }>("/auth/password/forgot", { method: "POST", body: { email }, auth: false });
+}
+
+export function resetPassword(token: string, newPassword: string) {
+  return api<void>("/auth/password/reset", {
+    method: "POST",
+    body: { token, new_password: newPassword },
+    auth: false,
+  });
+}
+
 export async function logout() {
   try {
     await api<void>("/auth/logout", { method: "POST" });
