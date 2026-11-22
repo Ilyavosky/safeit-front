@@ -5,6 +5,10 @@ import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils/cn";
+import { useSession } from "@/hooks/use-session";
+import { useApi } from "@/hooks/use-api";
+import { listAudit } from "@/lib/api/audit";
+import { formatDateTime } from "@/lib/utils/format-date";
 
 type NavItem = { href: string; match: string; label: string; icon: React.ReactNode };
 
@@ -135,14 +139,14 @@ export function NavGroup({
   );
 }
 
-type SidebarProps = {
-  userName?: string;
-  nextScan?: string;
-};
-
-export function Sidebar({ userName, nextScan }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname();
+  const { user, ready } = useSession();
+  const lastScan = useApi(ready && user ? async () => (await listAudit({ action: "scan.recon_finished", limit: 1 }))[0] ?? null : null, [ready, user?.id]);
+  const userName = user?.email;
   const initial = userName?.trim().charAt(0).toUpperCase();
+  const scanLoading = !ready || (user !== null && lastScan.loading);
+  const scanText = lastScan.data ? formatDateTime(lastScan.data.created_at) : "Aún no hay escaneos";
 
   return (
     <aside className="hidden h-screen flex-col border-r border-[#262a30] bg-[#17191d] px-4 pb-[18px] pt-[22px] lg:sticky lg:top-0 lg:flex">
@@ -162,12 +166,12 @@ export function Sidebar({ userName, nextScan }: SidebarProps) {
               <path d="M12 12l5-5" />
             </>,
           )}
-          <p className="text-sm font-semibold text-text">Próximo escaneo</p>
+          <p className="text-sm font-semibold text-text">Último escaneo</p>
         </div>
-        {nextScan ? (
-          <p className="mt-1.5 text-[13px] text-[#c3cbe6]">{nextScan}</p>
-        ) : (
+        {scanLoading ? (
           <span className="mt-2.5 block h-2.5 w-28 rounded-full bg-[#2c3550]" aria-hidden="true" />
+        ) : (
+          <p className="mt-1.5 text-[13px] text-[#c3cbe6]">{scanText}</p>
         )}
       </div>
 
@@ -182,8 +186,8 @@ export function Sidebar({ userName, nextScan }: SidebarProps) {
         </span>
         <div className="min-w-0 flex-1 leading-tight">
           {userName ? (
-            <p className="truncate text-sm font-semibold">{userName}</p>
-          ) : (
+            <p className="truncate text-sm font-semibold" title={userName}>{userName}</p>
+          ) : ready ? null : (
             <span className="block h-2.5 w-24 rounded-full bg-line" aria-hidden="true" />
           )}
         </div>

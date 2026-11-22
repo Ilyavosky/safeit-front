@@ -189,8 +189,27 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
   );
 }
 
+const NOTIFICATIONS_STORAGE_KEY = "safeit.notifications";
+const NOTIFICATIONS_DEFAULT: Record<NotificationKey, boolean> = { critical: false, scanDone: false, weekly: false };
+
 function NotificationsCard({ initial }: { initial?: Record<NotificationKey, boolean> }) {
-  const [values, setValues] = useState<Record<NotificationKey, boolean>>(initial ?? { critical: false, scanDone: false, weekly: false });
+  const [values, setValues] = useState<Record<NotificationKey, boolean>>(initial ?? NOTIFICATIONS_DEFAULT);
+
+  useEffect(() => {
+    if (initial) return;
+    try {
+      const raw = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      if (raw) setValues({ ...NOTIFICATIONS_DEFAULT, ...JSON.parse(raw) });
+    } catch {}
+  }, [initial]);
+
+  function update(key: NotificationKey, value: boolean) {
+    const next = { ...values, [key]: value };
+    setValues(next);
+    try {
+      localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(next));
+    } catch {}
+  }
 
   return (
     <ul className="-my-1">
@@ -200,7 +219,7 @@ function NotificationsCard({ initial }: { initial?: Record<NotificationKey, bool
             <p className="text-[14.5px] font-medium">{n.title}</p>
             <p className="mt-0.5 text-[13px] text-[#80878f]">{n.text}</p>
           </div>
-          <Toggle label={n.title} checked={values[n.key]} onChange={(v) => setValues({ ...values, [n.key]: v })} />
+          <Toggle label={n.title} checked={values[n.key]} onChange={(v) => update(n.key, v)} />
         </li>
       ))}
     </ul>

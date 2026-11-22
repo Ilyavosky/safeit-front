@@ -126,8 +126,8 @@ export function MfaSetup({ backupCodes = [] }: MfaSetupProps) {
             )}
           </div>
           <p className="mt-4 text-center text-[13px] text-muted">¿No puedes escanear? Escribe esta clave en la app:</p>
-          <div className="mt-2 flex h-11 items-center justify-center rounded-xl border border-line bg-field text-sm font-semibold tracking-[2px] text-[#dfe3e8]">
-            {secret ?? <span className="h-2.5 w-40 rounded-full bg-line" aria-hidden="true" />}
+          <div className="mt-2 flex min-h-11 items-center justify-center rounded-xl border border-line bg-field px-3 py-2.5 text-center font-mono text-[13px] font-semibold leading-relaxed tracking-[1.5px] text-[#dfe3e8] [overflow-wrap:anywhere]">
+            {secret ? secret.replace(/(.{4})/g, "$1 ").trim() : <span className="h-2.5 w-40 rounded-full bg-line" aria-hidden="true" />}
           </div>
           {loadError && (
             <p role="alert" className="mt-3 text-center text-[13px] text-[#ff8f8f]">
