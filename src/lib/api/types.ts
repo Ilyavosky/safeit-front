@@ -14,6 +14,7 @@ export type FindingLifecycle = S["FindingLifecycle"];
 export type RemediationStatus = S["RemediationStatus"];
 export type ReportResponse = S["ReportResponse"];
 export type LatestReportResponse = S["LatestReportResponse"];
+export type ReportSummaryResponse = S["ReportSummaryResponse"];
 export type RecommendationResponse = S["RecommendationResponse"];
 export type RecommendationStatus = S["RecommendationStatus"];
 export type AssetResponse = S["AssetResponse"];

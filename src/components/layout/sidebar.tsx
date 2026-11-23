@@ -70,7 +70,7 @@ export const MONITOREO: NavItem[] = [
 
 export const SEGUIMIENTO: NavItem[] = [
   {
-    href: ROUTES.report("ultimo"),
+    href: ROUTES.reports,
     match: "/reports",
     label: "Reportes",
     icon: svg(

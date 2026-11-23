@@ -15,6 +15,7 @@ export const ROUTES = {
   asset: (assetId: string) => `/assets/${assetId}`,
   findings: "/findings",
   finding: (findingId: string) => `/findings/${findingId}`,
+  reports: "/reports",
   report: (scanId: string) => `/reports/${scanId}`,
   publicAnalysis: "/public-analysis",
   publicAnalysisDetail: (analysisId: string) => `/public-analysis/${analysisId}`,

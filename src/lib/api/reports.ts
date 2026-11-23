@@ -1,7 +1,14 @@
 import { api, apiFetch } from "./client";
-import type { LatestReportResponse, RecommendationResponse, RecommendationStatus, ReportResponse } from "./types";
+import type {
+  LatestReportResponse,
+  RecommendationResponse,
+  RecommendationStatus,
+  ReportResponse,
+  ReportSummaryResponse,
+} from "./types";
 
 export const getReport = (scanId: string) => api<ReportResponse>(`/reports/${scanId}`);
+export const listReports = () => api<ReportSummaryResponse[]>("/reports");
 export const getLatestReport = () => api<LatestReportResponse>("/reports/latest");
 export const updateRecommendation = (id: string, status: RecommendationStatus) =>
   api<RecommendationResponse>(`/recommendations/${id}`, { method: "PATCH", body: { status } });

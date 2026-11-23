@@ -13,6 +13,7 @@ import { getDashboard, listFindings } from "@/lib/api/findings";
 import { downloadReportPdf, getLatestReport, getReport, updateRecommendation } from "@/lib/api/reports";
 import { getScan } from "@/lib/api/scans";
 import { lifecycleToUi, toCounts, toRecommendation } from "@/lib/api/mappers";
+import { ROUTES } from "@/constants/routes";
 import { FINDING_STATUSES, type FindingStatus } from "@/constants/finding-status";
 import { formatDate, formatDuration } from "@/lib/utils/format-date";
 import type { RecommendationStatus } from "@/lib/api/types";
@@ -70,6 +71,7 @@ export function ReportView({ scanParam }: { scanParam: string }) {
     <>
       <PageHeader
         title="Reporte del escaneo"
+        breadcrumb={[{ label: "Reportes", href: ROUTES.reports }, { label: "Detalle" }]}
         description="Resumen para compartir con tu equipo o con quien tome decisiones."
         actions={
           <DownloadPdfButton

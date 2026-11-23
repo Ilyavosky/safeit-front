@@ -1061,6 +1061,34 @@ export interface components {
             /** Scan Id */
             scan_id: string | null;
         };
+        /** ReportSummaryResponse */
+        ReportSummaryResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Domain */
+            domain: string;
+            /**
+             * Domain Id
+             * Format: uuid
+             */
+            domain_id: string;
+            /** Generated With Llm */
+            generated_with_llm: boolean;
+            /**
+             * Scan Id
+             * Format: uuid
+             */
+            scan_id: string;
+            /** Severity Counts */
+            severity_counts: {
+                [key: string]: number;
+            };
+            /** Total Findings */
+            total_findings: number;
+        };
         /** ReportResponse */
         ReportResponse: {
             /**
