@@ -10,7 +10,7 @@ import { SeverityChart } from "@/components/reports/severity-chart";
 import { RecommendationsList } from "@/components/reports/recommendations-list";
 import { useApi } from "@/hooks/use-api";
 import { getDashboard, listFindings } from "@/lib/api/findings";
-import { downloadReportPdf, getReport, updateRecommendation } from "@/lib/api/reports";
+import { downloadReportPdf, getLatestReport, getReport, updateRecommendation } from "@/lib/api/reports";
 import { getScan } from "@/lib/api/scans";
 import { lifecycleToUi, toCounts, toRecommendation } from "@/lib/api/mappers";
 import { FINDING_STATUSES, type FindingStatus } from "@/constants/finding-status";
@@ -30,7 +30,7 @@ async function statusCounts(scanId: string) {
 }
 
 async function load(param: string) {
-  const scanId = param === "ultimo" ? (await getDashboard()).scan_id : param;
+  const scanId = param === "ultimo" ? (await getLatestReport()).scan_id : param;
   if (!scanId) return null;
   const [report, scan, dash, statuses] = await Promise.all([
     getReport(scanId),

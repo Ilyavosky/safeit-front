@@ -1056,6 +1056,11 @@ export interface components {
          * @enum {string}
          */
         RemediationStatus: "open" | "in_progress" | "fixed";
+        /** LatestReportResponse */
+        LatestReportResponse: {
+            /** Scan Id */
+            scan_id: string | null;
+        };
         /** ReportResponse */
         ReportResponse: {
             /**
