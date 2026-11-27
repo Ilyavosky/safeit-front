@@ -1,5 +1,16 @@
 # safeit-front
 
+<p align="center">
+  <img src="logo.png" alt="Logo de SafeIT" width="120">
+</p>
+
+![Vista previa de safeit-front](preview.png)
+
+| Recurso | Ruta en el repositorio | URL |
+|---|---|---|
+| Logo | `/logo.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/logo.png |
+| Vista previa | `/preview.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/preview.png |
+
 Frontend de **SafeIT**: Next.js (App Router), TypeScript y Tailwind CSS.
 
 ## Cómo correrlo
