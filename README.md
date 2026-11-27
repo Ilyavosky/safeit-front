@@ -4,6 +4,8 @@
   <img src="logo.png" alt="Logo de SafeIT" width="120">
 </p>
 
+> **About:** Interfaz web de SafeIT: dominios, hallazgos y reportes de seguridad (Next.js y TypeScript). Más detalle en [ABOUT.md](ABOUT.md) y [ARQUITECTURA.md](ARQUITECTURA.md).
+
 ![Interfaz de SafeIT funcionando](preview.png)
 
 ![Flujo de safeit-front](flujo.png)
