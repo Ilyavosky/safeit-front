@@ -4,12 +4,15 @@
   <img src="logo.png" alt="Logo de SafeIT" width="120">
 </p>
 
-![Vista previa de safeit-front](preview.png)
+![Interfaz de SafeIT funcionando](preview.png)
+
+![Flujo de safeit-front](flujo.png)
 
 | Recurso | Ruta en el repositorio | URL |
 |---|---|---|
 | Logo | `/logo.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/logo.png |
-| Vista previa | `/preview.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/preview.png |
+| Vista previa (interfaz funcionando) | `/preview.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/preview.png |
+| Flujo | `/flujo.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/flujo.png |
 
 Frontend de **SafeIT**: Next.js (App Router), TypeScript y Tailwind CSS.
 
