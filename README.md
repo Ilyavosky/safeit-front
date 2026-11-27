@@ -14,6 +14,26 @@
 | Vista previa (interfaz funcionando) | `/preview.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/preview.png |
 | Flujo | `/flujo.png` | https://raw.githubusercontent.com/Ilyavosky/safeit-front/main/flujo.png |
 
+## Documentación para revisión
+
+- [ABOUT.md](ABOUT.md): qué es el proyecto, tecnologías y funciones.
+- [ARQUITECTURA.md](ARQUITECTURA.md): diagrama de arquitectura explicado.
+
+### Arquitectura
+
+```mermaid
+flowchart LR
+    U["Usuario"] --> MW["middleware.ts<br/>protege las rutas con sesión"]
+    MW --> A["App Router<br/>src/app"]
+    A --> G["(auth)<br/>login, registro y MFA"]
+    A --> P["(app)<br/>dashboard, dominios, activos,<br/>hallazgos, reportes, auditoría,<br/>análisis público y configuración"]
+    P --> C["Componentes<br/>src/components"]
+    C --> H["Hooks<br/>src/hooks"]
+    H --> L["Cliente API tipado<br/>src/lib/api"]
+    G --> L
+    L -->|"/api/* (rewrite de Next)"| B["API SafeIT<br/>FastAPI en Railway"]
+```
+
 Frontend de **SafeIT**: Next.js (App Router), TypeScript y Tailwind CSS.
 
 ## Cómo correrlo
